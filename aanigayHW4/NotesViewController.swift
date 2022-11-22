@@ -59,6 +59,11 @@ final class NotesViewController: UIViewController{
     private func handleDelete(indexPath: IndexPath){
         dataSource.remove(at: indexPath.row)
         tableView.reloadData()
+        let defaults = UserDefaults.standard
+        UserDefaults.standard.removeObject(forKey: "notes")
+        if let data = defaults.object(forKey: "notes") as? Data {
+            dataSource = try! JSONDecoder().decode([ShortNote].self, from: data)
+        }
     }
     
     @objc
