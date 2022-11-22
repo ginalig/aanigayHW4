@@ -20,6 +20,10 @@ final class NotesViewController: UIViewController{
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        let defaults = UserDefaults.standard
+        if let data = defaults.object(forKey: "notes") as? Data {
+            dataSource = try! JSONDecoder().decode([ShortNote].self, from: data)
+        }
         setupView()
     }
     
@@ -48,7 +52,7 @@ final class NotesViewController: UIViewController{
         self.title = "Notes"
         let closeButton = UIButton(type: .close)
         closeButton.addTarget(self, action: #selector(dismissViewController),
-        for: .touchUpInside)
+                              for: .touchUpInside)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView:
                                                                     closeButton)
     }
@@ -106,6 +110,10 @@ extension NotesViewController: UITableViewDataSource {
 extension NotesViewController: AddNoteDelegate{
     func newNoteAdded(note : ShortNote){
         dataSource.insert(note, at: 0)
+        let defaults = UserDefaults.standard
+        if let encoded = try? JSONEncoder().encode(dataSource) {
+            defaults.set(encoded, forKey: "notes")
+        }
         tableView.reloadData()
     }
 }
